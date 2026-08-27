@@ -1,122 +1,49 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import type { FormEvent } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+const Icon = ({ name, size = 22 }: { name: string; size?: number }) => {
+  const paths: Record<string, React.ReactNode> = {
+    calendar: <><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M8 15h.01M12 15h.01M16 15h.01"/></>,
+    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    pin: <><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></>,
+    award: <><circle cx="12" cy="8" r="6"/><path d="m8.5 13-1 9 4.5-2 4.5 2-1-9"/></>,
+    stethoscope: <><path d="M6 3v5a6 6 0 0 0 12 0V3M4 3h4M16 3h4M12 14v2a5 5 0 0 0 10 0v-1"/><circle cx="22" cy="13" r="2"/></>,
+    check: <path d="m5 12 4 4L19 6"/>, arrow: <path d="M5 12h14M13 6l6 6-6 6"/>,
+    menu: <path d="M4 7h16M4 12h16M4 17h16"/>, close: <path d="m6 6 12 12M18 6 6 18"/>,
+  }
+  return <svg className="icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>
 }
 
+const navItems = [['About','#about'],['Services','#services'],['Clinic & Timings','#clinic'],['Reviews','#reviews'],['FAQs','#faq'],['Contact','#contact']]
+
+function App() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [openFaq, setOpenFaq] = useState(0)
+  const [sent, setSent] = useState(false)
+  const submit = (e: FormEvent) => { e.preventDefault(); setSent(true) }
+
+  return <div className="site-shell">
+    <header className="header">
+      <a href="#home" className="brand" aria-label="Dr. Shaunak Mehta home"><span className="brand-mark"><Icon name="stethoscope" size={25}/></span><span><strong>Dr. Shaunak Mehta</strong><small>General Physician</small></span></a>
+      <nav className={menuOpen?'nav open':'nav'} aria-label="Main navigation">{navItems.map(([label,href])=><a key={href} href={href} onClick={()=>setMenuOpen(false)}>{label}</a>)}</nav>
+      <a className="header-cta" href="#contact"><Icon name="calendar" size={18}/> Book Appointment</a>
+      <button className="menu-button" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Toggle menu"><Icon name={menuOpen?'close':'menu'}/></button>
+    </header>
+    <main>
+      <section className="hero-section" id="home">
+        <div className="hero-copy"><div className="eyebrow"><span/> Trusted care in Nanpura, Surat</div><h1>Thoughtful care.<br/><em>Trusted experience.</em></h1><p className="hero-lead">For over 35 years, Dr. Shaunak Mehta has helped families feel better with accurate diagnosis, clear guidance, and compassionate care.</p><div className="hero-actions"><a href="#contact" className="button primary">Book an Appointment <Icon name="arrow" size={18}/></a><a href="#clinic" className="button secondary"><Icon name="pin" size={18}/> Visit the Clinic</a></div><div className="hero-trust"><div className="avatars"><span>SM</span><span>35+</span><span>MD</span></div><p><strong>4.8/5 patient rating</strong><br/>Trusted by generations of families</p></div></div>
+        <div className="hero-visual" aria-label="Dr. Shaunak Mehta profile illustration"><div className="portrait-card"><div className="portrait-bg"><span className="medical-cross">+</span></div><div className="doctor-portrait"><div className="head"><div className="hair"/><div className="ear"/><div className="glasses"/></div><div className="neck"/><div className="coat"><div className="shirt"/><div className="coat-line left"/><div className="coat-line right"/><div className="scope"/></div></div><div className="availability"><span className="pulse-dot"/><div><strong>Available Mon–Fri</strong><small>5:00 PM – 7:00 PM</small></div></div></div><div className="experience-badge"><strong>35+</strong><span>Years of<br/>Experience</span></div></div>
+      </section>
+      <section className="credentials" aria-label="Credentials">{[["award","QUALIFICATION","MD, General Medicine"],["stethoscope","EXPERIENCE","35+ Years in Practice"],["check","REGISTRATION","GMC · G-16424"],["pin","LOCATION","Nanpura, Surat"]].map(([icon,label,value])=><div key={label}><span className="credential-icon"><Icon name={icon}/></span><p><small>{label}</small><strong>{value}</strong></p></div>)}</section>
+      <section className="section about" id="about"><div className="section-kicker">About the doctor</div><div className="about-grid"><h2>A lifetime dedicated to<br/><em>better health.</em></h2><div className="about-content"><p className="large-copy">Dr. Shaunak Mehta is a well-established General Physician who has been serving the Nanpura community in Surat for over three decades.</p><p>Known for his patient, approachable manner and clear communication, Dr. Mehta treats a broad spectrum of common and chronic conditions—helping patients of all ages get back on their feet with practical, no-nonsense care.</p><div className="education-list"><div><span>1990</span><p><strong>MD – General Medicine</strong><small>Government Medical College, Surat</small></p></div><div><span>1987</span><p><strong>MBBS</strong><small>Government Medical College, Surat</small></p></div></div></div></div></section>
+      <section className="section services" id="services"><div className="section-heading centered"><div className="section-kicker">How we can help</div><h2>Care for your <em>everyday health.</em></h2><p>Comprehensive, experienced medical care for common illnesses and ongoing health concerns.</p></div><div className="service-grid"><article className="service-main"><span className="service-icon"><Icon name="stethoscope" size={31}/></span><h3>General Physician Consultation</h3><p>A thorough consultation covering diagnosis, treatment guidance, and prescriptions for a wide range of health concerns.</p><div className="conditions">{['Fevers & infections','Seasonal illnesses','Digestive issues','General wellness'].map(x=><span key={x}><Icon name="check" size={15}/>{x}</span>)}</div></article><aside className="visit-card"><h3>What to expect</h3>{['Discuss symptoms & history','Physical examination','Diagnosis & treatment plan','Prescription & follow-up'].map((x,i)=><div className="step" key={x}><span>0{i+1}</span><p>{x}</p></div>)}<div className="fee"><span>Consultation fee</span><strong>₹500</strong></div><p className="mode"><Icon name="pin" size={16}/> In-clinic consultations only</p></aside></div></section>
+      <section className="clinic-section" id="clinic"><div className="clinic-map"><iframe title="Google Map showing Dr. Shaunak Mehta's Clinic" src="https://maps.google.com/maps?hl=en&q=Dr.%20Shaunak%20Mehta%27s%20Clinic%2C%20203%20Trade%20House%2C%20Opposite%20SBI%2C%20Athugar%20Street%2C%20Nanpura%2C%20Surat%20395001%2C%20Gujarat&z=17&ie=UTF8&iwloc=B&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/><div className="map-address"><span><Icon name="pin" size={18}/></span><p><strong>Dr. Shaunak Mehta's Clinic</strong><small>203, Trade House, Athugar Street, Nanpura</small></p></div></div><div className="clinic-info"><div className="section-kicker light">Plan your visit</div><h2>Your neighbourhood clinic<br/>in <em>Nanpura.</em></h2><div className="clinic-row"><Icon name="pin"/><p><small>CLINIC ADDRESS</small><strong>203, Trade House, Opposite SBI,<br/>Athugar Street, Nanpura, Surat – 395001</strong></p></div><div className="clinic-row"><Icon name="clock"/><p><small>CLINIC HOURS</small><strong>Monday – Friday · 5:00 PM – 7:00 PM</strong><span>Saturday & Sunday · Closed</span></p></div><div className="clinic-buttons"><a className="button light-button" target="_blank" rel="noreferrer" href="https://www.google.com/maps/search/?api=1&query=Dr+Shaunak+Mehta%27s+Clinic+203+Trade+House+Opposite+SBI+Athugar+Street+Nanpura+Surat+395001+Gujarat">Get Directions <Icon name="arrow" size={18}/></a><a className="text-link" href="#contact">Contact clinic</a></div></div></section>
+      <section className="section reviews" id="reviews"><div className="section-heading centered"><div className="section-kicker">Patient stories</div><h2>Trusted by patients,<br/><em>year after year.</em></h2></div><div className="rating"><strong>4.8</strong><div><span>★★★★★</span><small>Patient rating across listing platforms</small></div></div><div className="review-grid"><blockquote><span className="quote">“</span><p>One of the most trusted doctors in Surat. Patients keep returning for his thorough consultations and reliable prescriptions.</p><footer><span>P</span><div><strong>Patient review</strong><small>Paraphrased from public listing</small></div></footer></blockquote><blockquote><span className="quote">“</span><p>I recommend the doctor.</p><footer><span>V</span><div><strong>Verified Patient</strong><small>Public patient listing</small></div></footer></blockquote></div></section>
+      <section className="section faq" id="faq"><div className="faq-heading"><div className="section-kicker">Good to know</div><h2>Frequently asked<br/><em>questions.</em></h2><p>Can't find what you're looking for?</p><a href="#contact">Get in touch <Icon name="arrow" size={16}/></a></div><div className="accordion">{[["Where does Dr. Shaunak Mehta practice?","At Dr. Shaunak Mehta's Clinic, 203, Trade House, Athugar Street, Nanpura, Surat."],["What are Dr. Mehta's qualifications?","MBBS and MD (General Medicine), both from Government Medical College, Surat."],["What are the clinic timings?","Monday to Friday, 5:00 PM to 7:00 PM. The clinic is closed on weekends."],["What is the consultation fee?","The consultation fee is ₹500 per visit."],["Is online or video consultation available?","Currently, Dr. Mehta offers in-clinic consultations only."],["What should I bring to my appointment?","Please bring any previous prescriptions, test reports, and a list of current medications, if applicable."]].map(([q,a],i)=><div className={openFaq===i?'faq-item active':'faq-item'} key={q}><button onClick={()=>setOpenFaq(openFaq===i?-1:i)}><span>{q}</span><b>{openFaq===i?'−':'+'}</b></button><div className="answer"><p>{a}</p></div></div>)}</div></section>
+      <section className="contact-section" id="contact"><div className="contact-copy"><div className="section-kicker light">Book a consultation</div><h2>Let’s get you<br/><em>feeling better.</em></h2><p>Share your details and preferred time. The clinic will get in touch to confirm availability.</p><div className="contact-note"><Icon name="clock"/><p><small>CLINIC HOURS</small><strong>Mon–Fri · 5:00 PM – 7:00 PM</strong></p></div></div><form className="contact-form" onSubmit={submit}>{sent?<div className="success"><span><Icon name="check" size={32}/></span><h3>Thank you.</h3><p>Your request has been noted. Please contact the clinic directly if you need urgent assistance.</p><button type="button" className="button secondary" onClick={()=>setSent(false)}>Send another request</button></div>:<><div className="field"><label htmlFor="name">Your name</label><input id="name" required placeholder="Enter your full name"/></div><div className="form-row"><div className="field"><label htmlFor="phone">Phone number</label><input id="phone" type="tel" required placeholder="+91 00000 00000"/></div><div className="field"><label htmlFor="time">Preferred time</label><select id="time" defaultValue=""><option value="" disabled>Select a time</option><option>5:00 PM – 5:30 PM</option><option>5:30 PM – 6:00 PM</option><option>6:00 PM – 6:30 PM</option><option>6:30 PM – 7:00 PM</option></select></div></div><div className="field"><label htmlFor="message">How can we help? <span>(optional)</span></label><textarea id="message" placeholder="Briefly describe your concern" rows={3}/></div><button className="button primary submit" type="submit">Request Appointment <Icon name="arrow" size={18}/></button><small className="privacy">By submitting, you agree to be contacted by the clinic regarding your appointment.</small></>}</form></section>
+    </main>
+    <footer className="footer"><div className="footer-top"><a href="#home" className="brand footer-brand"><span className="brand-mark"><Icon name="stethoscope" size={25}/></span><span><strong>Dr. Shaunak Mehta</strong><small>General Physician · Nanpura, Surat</small></span></a><div className="footer-links">{navItems.slice(0,3).map(([label,href])=><a key={href} href={href}>{label}</a>)}<a href="#contact">Contact</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Dr. Shaunak Mehta. All rights reserved.</span><span>Developed by <a href="https://shivantra.com/" target="_blank" rel="noreferrer"><strong>Shivantra</strong></a></span></div></footer>
+  </div>
+}
 export default App
